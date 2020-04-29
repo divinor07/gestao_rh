@@ -1,9 +1,10 @@
 from django.urls import path
-from .views import \
-    FuncionariosList, \
-    FuncionarioEdit, \
-    FuncionarioDelete, \
-    FuncionarioNovo
+from .views import (
+    FuncionariosList,
+    FuncionarioEdit,
+    FuncionarioDelete,
+    FuncionarioNovo,
+)
 
 urlpatterns = [
     path('', FuncionariosList.as_view(), name='list_funcionarios'),

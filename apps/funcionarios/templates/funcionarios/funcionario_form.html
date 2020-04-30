@@ -31,8 +31,7 @@
         </li>
     {% endfor %}
 </ul>
-<a href="{% url 'create_documento' object.id %}" class="btn btn-success">
-    Adicionar Documento
-</a>
+
+<h3>Total de horas extras: {{ object.total_horas_extra }}</h3>
 
 {% endblock %}

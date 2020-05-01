@@ -1,5 +1,4 @@
 function utilizouHoraExtra(id) {
-    console.log(id)
     token = document.getElementsByName("csrfmiddlewaretoken")[0].value;
 
     $.ajax({
@@ -9,7 +8,6 @@ function utilizouHoraExtra(id) {
             csrfmiddlewaretoken: token
         },
         success: function(result) {
-            console.log(result)
             $("#mensagem").text(result.mensagem);
             $("#horas_atualizadas").text(result.horas);
         }

@@ -1,4 +1,6 @@
+import io
 from django.contrib.auth.models import User
+from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import (
     ListView,
@@ -6,6 +8,7 @@ from django.views.generic import (
     DeleteView,
     CreateView,
 )
+from reportlab.pdfgen import canvas
 from .models import Funcionario
 
 
@@ -16,9 +19,11 @@ class FuncionariosList(ListView):
         empresa_logada = self.request.user.funcionario.empresa
         return Funcionario.objects.filter(empresa=empresa_logada)
 
+
 class FuncionarioEdit(UpdateView):
     model = Funcionario
     fields = ['nome', 'departamentos']
+
 
 class FuncionarioDelete(DeleteView):
     model = Funcionario
@@ -35,3 +40,31 @@ class FuncionarioNovo(CreateView):
         funcionario.user = User.objects.create(username=username)
         funcionario.save()
         return super(FuncionarioNovo, self).form_valid(form)
+
+
+def relatorio_funcionarios(request):
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="mypdf.pdf"'
+
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer)
+
+    p.drawString(200, 810, 'Relatório de Funcionarios')
+
+    funcionarios = Funcionario.objects.filter(empresa=request.user.funcionario.empresa)
+
+    str_ = 'Nome: %s | Hora extra: %.2f'
+
+    y = 750
+    for funcionario in funcionarios:
+        p.drawString(10, y, str_ % (funcionario.nome, funcionario.total_horas_extra))
+        y -= 20
+
+    p.showPage()
+    p.save()
+
+    pdf = buffer.getvalue()
+    buffer.close()
+    response.write(pdf)
+
+    return response
